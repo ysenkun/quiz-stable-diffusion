@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkoc_app"]=self["webpackChunkoc_app"]||[]).push([[443],{589:function(n,a,u){u.r(a),u.d(a,{default:function(){return f}});var t=u(252);const c={class:"about"},e=(0,t._)("h1",null,"This is an about page",-1),r=[e];function s(n,a){return(0,t.wg)(),(0,t.iD)("div",c,r)}var o=u(744);const i={},p=(0,o.Z)(i,[["render",s]]);var f=p}}]);
+//# sourceMappingURL=about.ac029cf4.js.map
