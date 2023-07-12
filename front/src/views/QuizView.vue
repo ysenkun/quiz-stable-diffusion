@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import io from "socket.io-client"
 export default {
   data() {
     return{
@@ -29,10 +30,26 @@ export default {
     }
   },
   mounted() {
+    this.initSocketConnection();
+
     this.sleep = waitTime => new Promise( resolve => setTimeout(resolve, waitTime) );
     this.start();
   },
   methods: {
+    initSocketConnection() {
+      console.log("Initializing socket.io...");
+      this.mySocket = io("https://yulon.cps.akita-pu.ac.jp");
+      console.log(this.mySocket)
+
+      this.mySocket.on("connect", () => {
+        console.log("My socket ID:", this.mySocket.id);
+      });
+
+      this.mySocket.on("status", (quiz) => {
+        console.log(quiz)
+        this.game_start = false;
+      });
+    },
     async start() {
       while (this.game_start) {
         this.image= {src: require(`../../public/quiz_image/${this.image_num}_output.jpeg`)};
@@ -45,6 +62,7 @@ export default {
     },
     stop() {
       this.game_start = false;
+      this.mySocket.emit("quiz_status", "stop");
     }
   }
 }

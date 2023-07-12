@@ -11,7 +11,7 @@
 export default {
   methods: {
     start(){
-      this.$router.push(`/quiz?name=user`)
+      this.$router.push(`/select`)
     }
   }
 }
