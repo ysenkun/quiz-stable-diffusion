@@ -11,7 +11,7 @@
 export default {
   methods: {
     start(){
-      this.$router.push('/quiz')
+      this.$router.push(`/quiz?name=user`)
     }
   }
 }
@@ -28,6 +28,6 @@ export default {
   position: relative;
   bottom: -50%;
   margin-left: auto;
-  margin-right: auto
+  margin-right: auto;
 }
 </style>
