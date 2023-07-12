@@ -23,6 +23,7 @@ const io = require("socket.io")(
 ).listen(server);
 
 let quiz = {};
+const fs = require('fs');
 
 function main() {
   setupSocketServer();
@@ -46,6 +47,19 @@ function setupSocketServer() {
     socket.on("quiz_status", (data) => {
       quiz['status'] = data
       io.emit("status", quiz);
+    });
+    
+    socket.on("image", (img, prompts) => {
+      const base64 = img.split(',')[1];
+      const decode = new Buffer.from(base64,'base64');
+      fs.writeFile('canvas.png', decode, (err) => {
+        if(err){
+            console.log(err)
+        }else{
+            console.log('saved');
+        }
+      });
+      console.log(prompts)
     });
   })
 }

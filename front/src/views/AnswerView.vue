@@ -15,23 +15,4 @@ export default {
 </script>
 
 <style>
-.logo{
-  position: relative;
-  top: 150px;
-}
-
-.q-vbt{
-  position: relative;
-  top: 30%;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.a-vbt{
-  /* position: absolute; */
-  position: relative;
-  top: 45%;
-  margin-left: auto;
-  margin-right: auto;
-}
 </style>

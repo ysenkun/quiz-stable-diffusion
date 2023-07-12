@@ -3,19 +3,28 @@
     <h1>AIが書いた絵を当てろ!</h1>
     <v-img alt="quiz" :src="image.src" id='quiz-img'></v-img>
     <div v-if="questioner">
+      <v-img :src="url" alt="ここにプレビューが表示されます"></v-img>
+      <label>
+          <input type="file" name="example" accept="image/*, image/png" ref="image" @change="preview($event)">
+          画像ファイルを選択
+      </label>
+      <br>
+      prompts: <input v-model="prompts" placeholder="What is this image?">
+      <br>
+      <v-btn id='send-btn' v-on:click="sendimg">送信</v-btn>
       <v-row justify="center">
-      <v-fab-transition>
-        <v-btn
-          class="q-fab-btn"
-          color="#1e90ff"
-          icon="mdi-chevron-up"
-          height="150"
-          width="150"
-          absolute center
-          @click="StartClick"
-        >START</v-btn>
-      </v-fab-transition>
-    </v-row>
+        <v-fab-transition>
+          <v-btn
+            class="q-fab-btn"
+            color="#1e90ff"
+            icon="mdi-chevron-up"
+            height="150"
+            width="150"
+            absolute center
+            @click="StartClick"
+          >START</v-btn>
+        </v-fab-transition>
+      </v-row>
     </div>
     <v-row justify="center">
     <v-fab-transition>
@@ -39,6 +48,7 @@
 
 <script>
 import io from "socket.io-client"
+
 export default {
   data() {
     return{
@@ -46,6 +56,9 @@ export default {
       game_start: true,
       image_num: 0,
       questioner: false,
+      file: null,
+      url: null,
+      prompts: null,
     }
   },
   mounted() {
@@ -64,7 +77,6 @@ export default {
     initSocketConnection() {
       console.log("Initializing socket.io...");
       this.mySocket = io("https://yulon.cps.akita-pu.ac.jp");
-      console.log(this.mySocket)
 
       this.mySocket.on("connect", () => {
         console.log("My socket ID:", this.mySocket.id);
@@ -84,8 +96,21 @@ export default {
         }
       });
     },
+    preview(){
+      let image = this.$refs.image.files[0]
+      this.url = URL.createObjectURL(image);
+    },
+    async sendimg(){
+      let image = this.$refs.image.files[0]
+
+      var reader = new FileReader();
+
+      reader.readAsDataURL(image)
+      await new Promise(resolve => reader.onload = () => resolve());
+      let dataUrl = reader.result
+      this.mySocket.emit( 'image', dataUrl, this.prompts );        
+    },
     async start() {
-      console.log('start_now')
       while (this.game_start) {
         this.image= {src: require(`../../public/quiz_image/${this.image_num}_output.jpeg`)};
         await this.sleep( 1000 );
@@ -112,7 +137,24 @@ export default {
   }
 }
 </script>
+
 <style>
+label {
+    padding: 5px 5px;
+    color: #ffffff;
+    background-color: #696969;
+    cursor: pointer;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+#send-btn{
+  position: relative;
+  top: 10px
+}
+
 #quiz-img{
   position: relative;
   width: 98%;
