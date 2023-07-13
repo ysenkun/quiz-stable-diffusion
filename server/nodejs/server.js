@@ -52,7 +52,7 @@ function setupSocketServer() {
     socket.on("image", (img, prompts) => {
       const base64 = img.split(',')[1];
       const decode = new Buffer.from(base64,'base64');
-      fs.writeFile('canvas.png', decode, (err) => {
+      fs.writeFile('../controlnet/canvas.png', decode, (err) => {
         if(err){
             console.log(err)
         }else{
@@ -60,6 +60,22 @@ function setupSocketServer() {
         }
       });
       console.log(prompts)
+
+      var {PythonShell} = require('python-shell');
+      var options = {
+        pythonPath: '/home/sen/anaconda3/envs/control/bin/python', 
+        pythonOptions: ['-u'], 
+        args: [prompts]
+      };
+      PythonShell.run('../controlnet/demo.py', options)
+        .then(() => {
+          console.log('finish')
+          io.emit("game_start");
+        })
+        .catch((error) => {
+          console.log(error);
+        }
+        );
+      });
     });
-  })
 }

@@ -2,46 +2,63 @@
   <div class="quiz">
     <h1>AIが書いた絵を当てろ!</h1>
     <v-img alt="quiz" :src="image.src" id='quiz-img'></v-img>
-    <div v-if="questioner">
-      <v-img :src="url" alt="ここにプレビューが表示されます"></v-img>
-      <label>
-          <input type="file" name="example" accept="image/*, image/png" ref="image" @change="preview($event)">
-          画像ファイルを選択
-      </label>
-      <br>
-      prompts: <input v-model="prompts" placeholder="What is this image?">
-      <br>
-      <v-btn id='send-btn' v-on:click="sendimg">送信</v-btn>
+    <div v-if="user_name == 'questioner' && isActive">
+        <v-img :src="url" alt="ここにプレビューが表示されます"></v-img>
+        <label>
+            <input type="file" name="example" accept="image/*, image/png" ref="image" @change="preview($event)">
+            画像ファイルを選択
+        </label>
+        <br>
+        prompts: <input v-model="prompts" placeholder="What is this image?">
+        <br>
+        <v-btn id='send-btn' v-on:click="sendimg">送信</v-btn>
+    </div>
+    <div v-if="isStart">
+      <div v-if="user_name == 'questioner'">
+        <v-row justify="center">
+          <v-fab-transition>
+            <v-btn
+              class="q-fab-btn"
+              color="#1e90ff"
+              icon="mdi-chevron-up"
+              height="150"
+              width="150"
+              absolute center
+              @click="StartClick"
+            >START</v-btn>
+          </v-fab-transition>
+        </v-row>
+      </div>
       <v-row justify="center">
-        <v-fab-transition>
+      <v-fab-transition>
           <v-btn
-            class="q-fab-btn"
-            color="#1e90ff"
+            class="a-fab-btn"
+            color="#ff0000"
             icon="mdi-chevron-up"
             height="150"
             width="150"
             absolute center
-            @click="StartClick"
-          >START</v-btn>
+            @click="StopClick"
+          >STOP</v-btn>
         </v-fab-transition>
       </v-row>
     </div>
-    <v-row justify="center">
-    <v-fab-transition>
-        <v-btn
-          class="a-fab-btn"
-          color="#ff0000"
-          icon="mdi-chevron-up"
-          height="150"
-          width="150"
-          absolute center
-          @click="StopClick"
-        >STOP</v-btn>
-      </v-fab-transition>
-    </v-row>
+    <div v-else-if="!isStart && send" class="load">
+      <h1>画像を生成中</h1>
+      <v-progress-circular
+      class="route_load"
+      indeterminate
+      color="blue"
+      size="100" 
+      width="15"
+      ></v-progress-circular>
+    </div>
+    <div v-else-if="!isStart && user_name == 'respondent'">
+      <h2 style="color:red">クイズの準備中</h2>
+    </div>
   </div>
   <v-btn color="blue" v-on:click="$router.back()" id="back-btn">戻る</v-btn>
-  <div v-if="questioner">
+  <div v-if="user_name == 'questioner'">
     <v-btn color="blue" v-on:click="answer()" id="answer-btn">答え</v-btn>
   </div>
 </template>
@@ -55,21 +72,30 @@ export default {
       image: {},
       game_start: true,
       image_num: 0,
-      questioner: false,
+      user_name: null,
       file: null,
       url: null,
       prompts: null,
+      isActive: true,
+      isReload: false,
+      isStart: false,
+      send: false,
     }
   },
   mounted() {
+    //let isReload = false;
+
+    window.addEventListener('load', () => {
+      this.url = null;
+      this.isActive = false;
+      this.isReload = true;
+      this.isStart = true;
+    });
     this.initSocketConnection();
 
     let url_string = window.location.href;
     let url = new URL(url_string);
-    var user_name = url.searchParams.get("name");
-    if (user_name == 'questioner'){
-      this.questioner = true
-    }
+    this.user_name = url.searchParams.get("name");
 
     this.sleep = waitTime => new Promise( resolve => setTimeout(resolve, waitTime) );
   },
@@ -95,27 +121,44 @@ export default {
           this.finish();
         }
       });
+
+      this.mySocket.on("game_start", () => {
+        location.reload();
+      });
     },
     preview(){
-      let image = this.$refs.image.files[0]
-      this.url = URL.createObjectURL(image);
+      let send_image = this.$refs.image.files[0]
+      this.url = URL.createObjectURL(send_image);
     },
     async sendimg(){
-      let image = this.$refs.image.files[0]
+      this.send = true;
+      this.isActive = false;
 
+      let send_image = this.$refs.image.files[0]
       var reader = new FileReader();
 
-      reader.readAsDataURL(image)
+      reader.readAsDataURL(send_image)
       await new Promise(resolve => reader.onload = () => resolve());
       let dataUrl = reader.result
       this.mySocket.emit( 'image', dataUrl, this.prompts );        
     },
+    async countdwon(){
+      await this.sleep( 1000 );
+      for (var name of ['1','2','3','start'] ){
+        this.image= {src: require(`../../public/countdown/${name}.png`)};
+        await this.sleep( 1000 );
+      }
+    },
     async start() {
+      if (this.isReload){
+        await this.countdwon()
+        this.isReload = false
+      }
       while (this.game_start) {
-        this.image= {src: require(`../../public/quiz_image/${this.image_num}_output.jpeg`)};
+        this.image= {src: require(`../assets/quiz_image/${this.image_num}_output.jpeg`)};
         await this.sleep( 1000 );
         this.image_num += 1;
-        if (this.image_num >= 20){
+        if (this.image_num >= 19){
           break
         }
       }
@@ -153,6 +196,17 @@ input[type="file"] {
 #send-btn{
   position: relative;
   top: 10px
+}
+
+.load{
+  position: relative;
+  top: 10px;
+}
+
+.route_load{
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #quiz-img{
