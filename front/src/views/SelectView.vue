@@ -8,7 +8,7 @@
 export default {
   methods: {
     start(user){
-      this.$router.push(`/quiz?name=${user}`)
+      this.$router.push(`/quiz?name=${user}&status=false`)
     }
   }
 }

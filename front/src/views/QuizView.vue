@@ -3,7 +3,7 @@
     <h1>AIが書いた絵を当てろ!</h1>
     <v-img alt="quiz" :src="image.src" id='quiz-img'></v-img>
     <div v-if="user_name == 'questioner' && isActive">
-        <v-img :src="url" alt="ここにプレビューが表示されます"></v-img>
+        <!-- <v-img :src="url" alt="ここにプレビューが表示されます" id="preview-img"></v-img> -->
         <label>
             <input type="file" name="example" accept="image/*, image/png" ref="image" @change="preview($event)">
             画像ファイルを選択
@@ -83,13 +83,17 @@ export default {
     }
   },
   mounted() {
-    //let isReload = false;
-
     window.addEventListener('load', () => {
-      this.url = null;
-      this.isActive = false;
-      this.isReload = true;
-      this.isStart = true;
+      let url_string = window.location.href;
+      let url = new URL(url_string);
+      let status = url.searchParams.get("status")
+      console.log(status)
+      if(status=='true'){
+        this.url = null;
+        this.isActive = false;
+        this.isReload = true;
+        this.isStart = true;
+      }
     });
     this.initSocketConnection();
 
@@ -123,6 +127,9 @@ export default {
       });
 
       this.mySocket.on("game_start", () => {
+        const urlSearchParams = new URLSearchParams(location.search)
+        urlSearchParams.set("status", "true")
+        history.replaceState("", "", `?${urlSearchParams.toString()}`)
         location.reload();
       });
     },
@@ -144,7 +151,7 @@ export default {
     },
     async countdwon(){
       await this.sleep( 1000 );
-      for (var name of ['1','2','3','start'] ){
+      for (var name of ['3','2','1','start'] ){
         this.image= {src: require(`../../public/countdown/${name}.png`)};
         await this.sleep( 1000 );
       }
@@ -183,14 +190,19 @@ export default {
 
 <style>
 label {
-    padding: 5px 5px;
-    color: #ffffff;
-    background-color: #696969;
-    cursor: pointer;
+  padding: 5px 5px;
+  color: #ffffff;
+  background-color: #696969;
+  cursor: pointer;
 }
 
 input[type="file"] {
-    display: none;
+  display: none;
+}
+
+#preview-img{
+  position: relative;
+  max-width: 800px;
 }
 
 #send-btn{
