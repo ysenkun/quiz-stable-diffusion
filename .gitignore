@@ -25,3 +25,5 @@ pnpm-debug.log*
 *.jpeg
 *.png
 *.jpg
+
+control_sd15_scribble.pth
