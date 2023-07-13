@@ -50,6 +50,7 @@ function setupSocketServer() {
     });
     
     socket.on("image", (img, prompts) => {
+      io.emit("create_image");
       const base64 = img.split(',')[1];
       const decode = new Buffer.from(base64,'base64');
       fs.writeFile('../controlnet/canvas.png', decode, (err) => {

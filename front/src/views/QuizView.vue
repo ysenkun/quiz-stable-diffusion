@@ -43,7 +43,7 @@
         </v-fab-transition>
       </v-row>
     </div>
-    <div v-else-if="!isStart && send" class="load">
+    <div v-else-if="!isStart && isCreate" class="load">
       <h1>画像を生成中</h1>
       <v-progress-circular
       class="route_load"
@@ -80,6 +80,7 @@ export default {
       isReload: false,
       isStart: false,
       send: false,
+      isCreate: false,
     }
   },
   mounted() {
@@ -87,7 +88,6 @@ export default {
       let url_string = window.location.href;
       let url = new URL(url_string);
       let status = url.searchParams.get("status")
-      console.log(status)
       if(status=='true'){
         this.url = null;
         this.isActive = false;
@@ -124,6 +124,10 @@ export default {
           this.game_start = false;
           this.finish();
         }
+      });
+
+      this.mySocket.on("create_image", () => {
+        this.isCreate = true;
       });
 
       this.mySocket.on("game_start", () => {
@@ -163,7 +167,7 @@ export default {
       }
       while (this.game_start) {
         this.image= {src: require(`../assets/quiz_image/${this.image_num}_output.jpeg`)};
-        await this.sleep( 1000 );
+        await this.sleep( 2000 );
         this.image_num += 1;
         if (this.image_num >= 19){
           break
