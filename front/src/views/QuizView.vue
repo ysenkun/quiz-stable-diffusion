@@ -11,7 +11,9 @@
         <br>
         prompts: <input v-model="prompts" placeholder="What is this image?">
         <br>
-        <v-btn id='send-btn' v-on:click="sendimg">送信</v-btn>
+        <div v-if="prompts && isPreview">
+          <v-btn id='send-btn' v-on:click="sendimg">送信</v-btn>
+        </div>
     </div>
     <div v-if="isStart">
       <div v-if="user_name == 'questioner'">
@@ -76,18 +78,19 @@ export default {
       file: null,
       url: null,
       prompts: null,
+      send: false,
       isActive: true,
       isReload: false,
       isStart: false,
-      send: false,
       isCreate: false,
+      isPreview: false
     }
   },
   mounted() {
     window.addEventListener('load', () => {
       let url_string = window.location.href;
       let url = new URL(url_string);
-      let status = url.searchParams.get("status")
+      let status = url.searchParams.get("status");
       if(status=='true'){
         this.url = null;
         this.isActive = false;
@@ -131,26 +134,27 @@ export default {
       });
 
       this.mySocket.on("game_start", () => {
-        const urlSearchParams = new URLSearchParams(location.search)
-        urlSearchParams.set("status", "true")
-        history.replaceState("", "", `?${urlSearchParams.toString()}`)
+        const urlSearchParams = new URLSearchParams(location.search);
+        urlSearchParams.set("status", "true");
+        history.replaceState("", "", `?${urlSearchParams.toString()}`);
         location.reload();
       });
     },
     preview(){
-      let send_image = this.$refs.image.files[0]
+      this.isPreview = true;
+      let send_image = this.$refs.image.files[0];
       this.url = URL.createObjectURL(send_image);
     },
     async sendimg(){
       this.send = true;
       this.isActive = false;
 
-      let send_image = this.$refs.image.files[0]
+      let send_image = this.$refs.image.files[0];
       var reader = new FileReader();
 
-      reader.readAsDataURL(send_image)
+      reader.readAsDataURL(send_image);
       await new Promise(resolve => reader.onload = () => resolve());
-      let dataUrl = reader.result
+      let dataUrl = reader.result;
       this.mySocket.emit( 'image', dataUrl, this.prompts );        
     },
     async countdwon(){
@@ -162,8 +166,8 @@ export default {
     },
     async start() {
       if (this.isReload){
-        await this.countdwon()
-        this.isReload = false
+        await this.countdwon();
+        this.isReload = false;
       }
       while (this.game_start) {
         this.image= {src: require(`../assets/quiz_image/${this.image_num}_output.jpeg`)};
