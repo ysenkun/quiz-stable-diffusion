@@ -5,7 +5,7 @@
     <div v-if="user_name == 'questioner' && isActive">
         <v-img :src="url" alt="ここにプレビューが表示されます" id="preview-img"></v-img>
         <label>
-            <input type="file" name="example" accept="image/*, image/png" ref="image" @change="preview($event)">
+            <input type="file" name="example" accept="image/*, image/png, image/heic" ref="image" @change="preview($event)">
             画像ファイルを選択
         </label>
         <br>
@@ -65,6 +65,8 @@
 
 <script>
 import io from "socket.io-client"
+import heic2any from 'heic2any';
+import imageCompression from 'browser-image-compression';
 
 export default {
   data() {
@@ -137,8 +139,14 @@ export default {
         location.reload();
       });
     },
-    preview(){
-      let send_image = this.$refs.image.files[0]
+    async preview(){
+      var send_image = this.$refs.image.files[0]
+      if (send_image.type === 'image/heif' || send_image.type === 'image/heic') {
+        send_image = await heic2any({
+          blob: send_image,
+          toType: 'image/jpeg',
+        });
+      }
       this.url = URL.createObjectURL(send_image);
     },
     async sendimg(){
@@ -146,6 +154,22 @@ export default {
       this.isActive = false;
 
       let send_image = this.$refs.image.files[0]
+      console.log(send_image)
+      console.log(send_image.size)
+      if (send_image.type === 'image/heif' || send_image.type === 'image/heic') {
+        send_image = await heic2any({
+          blob: send_image,
+          toType: 'image/jpeg',
+        });
+      }
+
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 600
+      }
+
+      send_image = await imageCompression(send_image ,options);
+
       var reader = new FileReader();
 
       reader.readAsDataURL(send_image)
