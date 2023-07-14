@@ -1,9 +1,9 @@
 <template>
   <div class="quiz">
-    <h1>AIが書いた絵を当てろ!</h1>
+    <h1>AIが描いた絵を当てろ!</h1>
     <v-img alt="quiz" :src="image.src" id='quiz-img'></v-img>
     <div v-if="user_name == 'questioner' && isActive">
-        <!-- <v-img :src="url" alt="ここにプレビューが表示されます" id="preview-img"></v-img> -->
+        <v-img :src="url" alt="ここにプレビューが表示されます" id="preview-img"></v-img>
         <label>
             <input type="file" name="example" accept="image/*, image/png" ref="image" @change="preview($event)">
             画像ファイルを選択
@@ -46,11 +46,11 @@
     <div v-else-if="!isStart && isCreate" class="load">
       <h1>画像を生成中</h1>
       <v-progress-circular
-      class="route_load"
-      indeterminate
-      color="blue"
-      size="100" 
-      width="15"
+        class="route_load"
+        indeterminate
+        color="blue"
+        size="100" 
+        width="15"
       ></v-progress-circular>
     </div>
     <div v-else-if="!isStart && user_name == 'respondent'">
@@ -58,7 +58,7 @@
     </div>
   </div>
   <v-btn color="blue" v-on:click="$router.back()" id="back-btn">戻る</v-btn>
-  <div v-if="user_name == 'questioner'">
+  <div v-if="user_name == 'questioner' && isStart">
     <v-btn color="blue" v-on:click="answer()" id="answer-btn">答え</v-btn>
   </div>
 </template>
