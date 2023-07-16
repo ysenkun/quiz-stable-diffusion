@@ -23,8 +23,8 @@ pnpm-debug.log*
 *.sw?
 
 *.jpeg
-*.png
 *.jpg
+canvas.png
 
 control_sd15_scribble.pth
 *.pyc
