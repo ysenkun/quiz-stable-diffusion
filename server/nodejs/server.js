@@ -23,6 +23,7 @@ const io = require("socket.io")(
 ).listen(server);
 
 let quiz = {};
+quiz['stop_name'] = null;
 const fs = require('fs');
 
 function main() {
@@ -44,9 +45,14 @@ function setupSocketServer() {
 
     quiz['status'] = 'start'
 
-    socket.on("quiz_status", (data) => {
+    socket.on("quiz_status", (data, stop_name) => {
       quiz['status'] = data
-      io.emit("status", quiz);
+      if (quiz['stop_name']!=null && quiz['status']=='stop'){
+        console.log('先に回答した人がいます')
+      }else{
+        quiz['stop_name'] = stop_name
+        io.emit("status", quiz);
+      }
     });
     
     socket.on("image", (img, prompts) => {
@@ -60,7 +66,6 @@ function setupSocketServer() {
             console.log('saved');
         }
       });
-      console.log(prompts)
 
       var {PythonShell} = require('python-shell');
       var options = {

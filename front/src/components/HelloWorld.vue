@@ -11,7 +11,10 @@
 export default {
   methods: {
     start(){
-      this.$router.push(`/select`)
+      let url_string = window.location.href;
+      let url = new URL(url_string);
+      let username = url.searchParams.get("username");
+      this.$router.push(`/input?username=${username}`)
     }
   }
 }

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import InputUsername from '../views/InputUsername.vue'
 import SelectView from '../views/SelectView.vue'
 import QuizView from '../views/QuizView.vue'
 import AnswerView from '../views/AnswerView.vue'
@@ -9,6 +10,11 @@ const routes = [
     path: '/',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/input',
+    name: 'Input',
+    component: InputUsername
   },
   {
     path: '/select',

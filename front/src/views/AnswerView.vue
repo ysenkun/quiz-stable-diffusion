@@ -21,7 +21,10 @@ export default {
   },
   methods: {
     HomeClick(){
-      this.$router.push(`/`)
+      let url_string = window.location.href;
+      let url = new URL(url_string);
+      let username = url.searchParams.get("username");
+      this.$router.push(`/?username=${username}`)
     }
   }
 }

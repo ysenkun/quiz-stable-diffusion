@@ -8,7 +8,10 @@
 export default {
   methods: {
     start(user){
-      this.$router.push(`/quiz?name=${user}&status=false`)
+      let url_string = window.location.href;
+      let url = new URL(url_string);
+      let username = url.searchParams.get("username");
+      this.$router.push(`/quiz?username=${username}&name=${user}&status=false`)
     }
   }
 }

@@ -1,8 +1,9 @@
 <template>
   <div class="quiz">
-    <h1>AIが描いた絵を当てろ!</h1>
+    <h1>AIが作った画像を当てろ!</h1>
+    <p>{{ ( stop_name || {} ).xxx }}</p>
     <v-img alt="quiz" :src="image.src" id='quiz-img'></v-img>
-    <div v-if="user_name == 'questioner' && isActive">
+    <div v-if="select_pos == 'questioner' && isActive">
         <v-img :src="url" alt="ここにプレビューが表示されます" id="preview-img"></v-img>
         <label>
             <input type="file" name="example" accept="image/*, image/png, image/heic" ref="image" @change="preview($event)">
@@ -10,13 +11,15 @@
         </label>
         <br>
         prompts: <input v-model="prompts" placeholder="What is this image?">
-        <br>
         <div v-if="prompts && isPreview">
           <v-btn id='send-btn' v-on:click="sendimg">送信</v-btn>
         </div>
     </div>
     <div v-if="isStart">
-      <div v-if="user_name == 'questioner'">
+      <div v-if='stop_name!=null'>
+        <h3>回答者:{{stop_name}}</h3>
+      </div>
+      <div v-if="select_pos == 'questioner'">
         <v-row justify="center">
           <v-fab-transition>
             <v-btn
@@ -31,19 +34,21 @@
           </v-fab-transition>
         </v-row>
       </div>
-      <v-row justify="center">
-      <v-fab-transition>
-          <v-btn
-            class="a-fab-btn"
-            color="#ff0000"
-            icon="mdi-chevron-up"
-            height="150"
-            width="150"
-            absolute center
-            @click="StopClick"
-          >STOP</v-btn>
-        </v-fab-transition>
-      </v-row>
+      <div v-if="stop_name==null">
+        <v-row justify="center">
+        <v-fab-transition>
+            <v-btn
+              class="a-fab-btn"
+              color="#ff0000"
+              icon="mdi-chevron-up"
+              height="150"
+              width="150"
+              absolute center
+              @click="StopClick"
+            >STOP</v-btn>
+          </v-fab-transition>
+        </v-row>
+      </div>
     </div>
     <div v-else-if="!isStart && isCreate" class="load">
       <h1>画像を生成中</h1>
@@ -55,12 +60,12 @@
         width="15"
       ></v-progress-circular>
     </div>
-    <div v-else-if="!isStart && user_name == 'respondent'">
+    <div v-else-if="!isStart && select_pos == 'respondent'">
       <h2 style="color:red">クイズの準備中</h2>
     </div>
   </div>
   <v-btn color="blue" v-on:click="$router.back()" id="back-btn">戻る</v-btn>
-  <div v-if="user_name == 'questioner' && isStart">
+  <div v-if="select_pos == 'questioner' && isStart">
     <v-btn color="blue" v-on:click="answer()" id="answer-btn">答え</v-btn>
   </div>
 </template>
@@ -76,7 +81,9 @@ export default {
       image: {},
       game_start: true,
       image_num: 0,
-      user_name: null,
+      select_pos: null,
+      username: null,
+      stop_name: null,
       file: null,
       url: null,
       prompts: null,
@@ -104,7 +111,8 @@ export default {
 
     let url_string = window.location.href;
     let url = new URL(url_string);
-    this.user_name = url.searchParams.get("name");
+    this.select_pos = url.searchParams.get("name");
+    this.username = url.searchParams.get("username"); 
 
     this.sleep = waitTime => new Promise( resolve => setTimeout(resolve, waitTime) );
   },
@@ -120,12 +128,15 @@ export default {
       this.mySocket.on("status", (quiz) => {
         if (quiz['status'] == 'stop'){
           this.game_start = false;
+          this.stop_name = quiz['stop_name'];
         }
         else if(quiz['status'] == 'start') {
+          this.stop_name = null;
           this.game_start = true;
           this.start();
         }
         else if(quiz['status'] == 'finish') {
+          this.stop_name = null;
           this.game_start = false;
           this.finish();
         }
@@ -202,17 +213,17 @@ export default {
     },
     StopClick() {
       this.game_start = false;
-      this.mySocket.emit("quiz_status", "stop");
+      this.mySocket.emit("quiz_status", "stop", this.username);
     },
     StartClick() {
-      this.mySocket.emit("quiz_status", "start");
+      this.mySocket.emit("quiz_status", "start", null);
     },
     answer() {
-      this.mySocket.emit("quiz_status", "finish");
+      this.mySocket.emit("quiz_status", "finish", null);
       this.$router.push(`/answer`);
     },
     finish(){
-      this.$router.push(`/answer`);
+      this.$router.push(`/answer?username=${this.username}`);
     }
   }
 }
@@ -237,7 +248,8 @@ input[type="file"] {
 
 #send-btn{
   position: relative;
-  top: 10px
+  top: -30px;
+  left: 280px;
 }
 
 .load{
