@@ -69,7 +69,7 @@ function setupSocketServer() {
 
       var {PythonShell} = require('python-shell');
       var options = {
-        pythonPath: '/home/sen/anaconda3/envs/control/bin/python', 
+        pythonPath: '{YOUR_APPROPRIATE_PATH}/control/bin/python', 
         pythonOptions: ['-u'], 
         args: [prompts]
       };
