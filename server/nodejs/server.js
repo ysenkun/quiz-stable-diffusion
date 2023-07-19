@@ -17,7 +17,7 @@ console.log("Server is running on http://127.0.0.1:" + port);
 const io = require("socket.io")(
   http, {
     cors: {
-    origin: ["https://yulon.cps.akita-pu.ac.jp/ws"],
+    origin: [""],
     },
   }
 ).listen(server);
