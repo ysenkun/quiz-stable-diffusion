@@ -119,7 +119,7 @@ export default {
   methods: {
     initSocketConnection() {
       console.log("Initializing socket.io...");
-      this.mySocket = io("https://yulon.cps.akita-pu.ac.jp");
+      this.mySocket = io("your_socket_ip");
 
       this.mySocket.on("connect", () => {
         console.log("My socket ID:", this.mySocket.id);
