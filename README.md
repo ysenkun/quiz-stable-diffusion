@@ -54,7 +54,7 @@ Modify _this.mySocket = io("your_socket_ip");_ to appropriate socket.io IP.
 You need to modify 1 location in front/src/views/QuizView.vue  
 
 ## Run
-Enter the video path and run it.  
+
 ```bash
 $ cd server/nodejs
 $ npm run serve
