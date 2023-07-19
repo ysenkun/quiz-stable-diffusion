@@ -24,7 +24,7 @@
           type="submit"
           variant="elevated"
         >
-          Enter a room
+          Enter the room
         </v-btn>
       </v-form>
     </v-card>

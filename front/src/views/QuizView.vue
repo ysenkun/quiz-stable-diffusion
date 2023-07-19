@@ -1,6 +1,6 @@
 <template>
   <div class="quiz">
-    <h1>Guess the AI-generated image!</h1>
+    <h2>Guess the AI-generated image!</h2>
     <p>{{ ( stop_name || {} ).xxx }}</p>
     <v-img alt="quiz" :src="image.src" id='quiz-img'></v-img>
     <div v-if="select_pos == 'questioner' && isActive">
