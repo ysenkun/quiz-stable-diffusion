@@ -1,7 +1,7 @@
 <template>
-  <v-btn block rounded="xl" size="large" height="72" min-width="364" class="q-vbt" v-on:click="start('questioner')">出題者</v-btn>
-  <v-btn block rounded="xl" size="large" height="72" min-width="364" class="a-vbt" v-on:click="start('respondent')">回答者</v-btn>
-  <v-btn color="blue" v-on:click="$router.back()" id="back-btn">戻る</v-btn>
+  <v-btn block rounded="xl" size="large" height="72" min-width="364" class="q-vbt" v-on:click="start('questioner')">Questioner</v-btn>
+  <v-btn block rounded="xl" size="large" height="72" min-width="364" class="a-vbt" v-on:click="start('respondent')">Respondent</v-btn>
+  <v-btn color="blue" v-on:click="$router.back()" id="back-btn">back</v-btn>
 </template>
 
 <script>

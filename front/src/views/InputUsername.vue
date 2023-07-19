@@ -10,7 +10,7 @@
           :readonly="loading"
           :rules="[required]"
           clearable
-          label="ユーザ名"
+          label="user name"
           class="custom-text-field"
         ></v-text-field>
 
@@ -24,12 +24,12 @@
           type="submit"
           variant="elevated"
         >
-          入室
+          Enter a room
         </v-btn>
       </v-form>
     </v-card>
   </v-sheet>
-  <v-btn color="blue" v-on:click="$router.back()" id="back-btn">戻る</v-btn>
+  <v-btn color="blue" v-on:click="$router.back()" id="back-btn">back</v-btn>
 </template>
 
 <script>

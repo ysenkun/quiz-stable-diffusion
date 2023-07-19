@@ -1,7 +1,7 @@
 <template>
-  <h1>答え</h1>
+  <h1>Answer</h1>
     <v-img alt="quiz" :src="answer_img.src" id='ans-img'></v-img>
-  <v-btn color="blue" v-on:click="HomeClick()" id="back-btn">ホーム戻る</v-btn>
+  <v-btn color="blue" v-on:click="HomeClick()" id="back-btn">Home</v-btn>
 </template>
 
 <script>

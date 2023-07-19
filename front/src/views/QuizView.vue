@@ -1,23 +1,23 @@
 <template>
   <div class="quiz">
-    <h1>AIが作った画像を当てろ!</h1>
+    <h1>Guess the AI-generated image!</h1>
     <p>{{ ( stop_name || {} ).xxx }}</p>
     <v-img alt="quiz" :src="image.src" id='quiz-img'></v-img>
     <div v-if="select_pos == 'questioner' && isActive">
-        <v-img :src="url" alt="ここにプレビューが表示されます" id="preview-img"></v-img>
+        <v-img :src="url" alt="A preview is displayed." id="preview-img"></v-img>
         <label>
             <input type="file" name="example" accept="image/*, image/png, image/heic" ref="image" @change="preview($event)">
-            画像ファイルを選択
+            Select an image file
         </label>
         <br>
         prompts: <input v-model="prompts" placeholder="What is this image?">
         <div v-if="prompts && isPreview">
-          <v-btn id='send-btn' v-on:click="sendimg">送信</v-btn>
+          <v-btn id='send-btn' v-on:click="sendimg">send</v-btn>
         </div>
     </div>
     <div v-if="isStart">
       <div v-if='stop_name!=null'>
-        <h3>回答者:{{stop_name}}</h3>
+        <h3>Respondent:{{stop_name}}</h3>
       </div>
       <div v-if="select_pos == 'questioner'">
         <v-row justify="center">
@@ -51,7 +51,7 @@
       </div>
     </div>
     <div v-else-if="!isStart && isCreate" class="load">
-      <h1>画像を生成中</h1>
+      <h1>Generating image</h1>
       <v-progress-circular
         class="route_load"
         indeterminate
@@ -61,12 +61,12 @@
       ></v-progress-circular>
     </div>
     <div v-else-if="!isStart && select_pos == 'respondent'">
-      <h2 style="color:red">クイズの準備中</h2>
+      <h2 style="color:red">Preparing</h2>
     </div>
   </div>
-  <v-btn color="blue" v-on:click="$router.back()" id="back-btn">戻る</v-btn>
+  <v-btn color="blue" v-on:click="$router.back()" id="back-btn">back</v-btn>
   <div v-if="select_pos == 'questioner' && isStart">
-    <v-btn color="blue" v-on:click="answer()" id="answer-btn">答え</v-btn>
+    <v-btn color="blue" v-on:click="answer()" id="answer-btn">Answer</v-btn>
   </div>
 </template>
 
